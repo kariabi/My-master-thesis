@@ -1,0 +1,107 @@
+---
+title: "Gjennomsnittelig egg produskjon per female over 15 dager"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(grid)  # For unit()
+
+# Last inn data
+gj <- read_excel("Gjennomsnitt.xlsx")
+
+# Reshape egg-data til long format
+gj_long <- gj %>%
+  pivot_longer(cols = starts_with("Egg_per_female_"), 
+               names_to = "Round", 
+               values_to = "Egg")
+
+# Skalafaktor for sekundær akse
+scale_factor <- max(gj_long$Egg, na.rm = TRUE) / max(gj$Average_adult, na.rm = TRUE)
+
+# Lag plott
+p <- ggplot() +
+  # Boxplot med fyll og lys grå kant
+  geom_boxplot(data = gj_long, 
+               aes(x = factor(Day), y = Egg, fill = factor(Temperature)), 
+               width = 0.6, outlier.size = 2, colour = "gray70") +
+  
+  # Gjennomsnittslinje i grått
+  stat_summary(data = gj_long, 
+               aes(x = factor(Day), y = Egg), 
+               fun = mean, geom = "crossbar", width = 0.6, colour = "gray25", size = 0.3) +
+  
+  # Fasit per temperatur
+  facet_grid(Temperature ~ .) +
+  
+  # Magenta-linje for voksne hunner
+  geom_line(data = gj, 
+            aes(x = factor(Day), 
+                y = Average_adult * scale_factor, 
+                colour = "Average\nnumber of female"), 
+            group = 1, size = 1) +
+  
+  # Primær og sekundær y-akse
+  scale_y_continuous(
+    breaks = seq(0, 130, by = 20),
+    sec.axis = sec_axis(~ . / scale_factor, 
+                        name = "Average number of female", 
+                        breaks = seq(0, 120000, by = 20000))
+  ) +
+
+  # Farger og forklaringer
+  scale_fill_manual(
+    values = c("18-19" = "lightblue", "22-23" = "#FF9999"),
+    name = NULL
+  ) +
+  scale_colour_manual(
+    values = c("Average\nnumber of female" = "plum2", " " = NA),  # NA = tom
+    breaks = c("Average\nnumber of female", " "),  # inkluder tom linje
+    labels = c("Average\nnumber of female", ""),   # vis som mellomrom
+    name = "Color explanation"
+  ) +
+
+  # Forklaringsstil
+  guides(
+    fill = guide_legend(override.aes = list(shape = 15, size = 5)),
+    colour = guide_legend(override.aes = list(linetype = 1, size = 1))
+  ) +
+
+  # Tittel og aksetekster
+  labs(
+    title = "Specific Egg Production and Average Female Count",
+    x = "Egg production day",
+    y = "SEP (eggs female⁻¹ day⁻¹)"
+  ) +
+
+  # Tema og justering av forklaringsboks
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    legend.key.width = unit(0.5, "cm"),
+    legend.box.margin = margin(0, 0, 0, 0),
+    legend.margin = margin(0, 0, 0, 0),
+    legend.title = element_text(size = 9),
+    legend.text = element_text(size = 8),
+    legend.spacing.y = unit(0.2, "cm")
+  )
+
+# Lagre bilde for bruk i Word (god kvalitet og proporsjoner)
+ggsave("high_contrast_graph_final_1.png", plot = p,
+       width = 16, height = 10, dpi = 300, units = "cm", bg = "white")
+
+```
+
+
+
+
+
+

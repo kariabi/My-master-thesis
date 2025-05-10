@@ -1,0 +1,40 @@
+```{r}
+library(tidyverse)
+library(readxl)
+library(dplyr)
+```
+
+```{r}
+library(ggplot2)
+```
+
+
+```{r}
+gj<-read_excel("gj.xlsx")
+```
+
+```{r}
+p<-ggplot(gj,aes(x=Day,y=Avarage_egg,group = Temperature,colour = Temperature))+
+  geom_line(size=1)+
+  scale_color_manual(values=c("18-19"="lightblue","22-23"="#FF9999"))+
+  scale_y_continuous(
+      limits = c(0,4500000),
+      breaks = seq(0,4500000,by=500000)
+    )+
+    scale_x_continuous(
+      limits = c(1,15),
+      breaks = seq(1,15))+
+  labs(title = "Total average egg production over time",
+       x="Egg production day",
+       y="Average egg production")
+ggsave("high_contrast_graph_final_1.png", plot = p,
+       width = 16, height = 10, dpi = 300, units = "cm", bg = "white")
+  
+```
+
+
+
+
+
+
+

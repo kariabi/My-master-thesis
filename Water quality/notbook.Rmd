@@ -1,0 +1,21 @@
+---
+title: "water quality significant or not"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+library(readxl)
+```
+```{r}
+data<-read_excel("water massurments.xlsx")
+```
+```{r}
+str(data)
+```
+
+```{r}
+model <- lm(Egg ~ `Dissolved_oxygen_(mg/L)` + `Salinity_(PPT)` + pH, data = data)
+anova_result <- anova(model)
+print(anova_result)
+```
+

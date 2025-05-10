@@ -1,0 +1,140 @@
+---
+title: "Significant difference in egg production"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+```{r}
+data<-read_excel("Oppdatert.xlsx")
+```
+```{r}
+summary(data)
+```
+
+
+```{r}
+unique(data$temperature)
+
+```
+
+### Significant difference in temperature when it comes to total egg production. 
+
+```{r}
+# Filtrer dataene for de to temperaturgruppene
+df_filtered <- data %>%
+  filter(Temperature %in% c("18-19", "22-23"))
+
+# Utfør t-test
+t_test_result <- t.test(`Amount_of_egg` ~ Temperature, data = df_filtered)
+
+# Sjekk resultatet
+t_test_result
+
+```
+```{r}
+df_summary <- data %>%
+  group_by(Temperature) %>%
+  summarise(
+    mean_eggs = mean(`Amount_of_egg`),
+    sd_eggs = sd(`Amount_of_egg`),
+    n = n()
+  )
+df_summary
+
+```
+```{r}
+# Beregn gruppevis gjennomsnitt, standardavvik og antall
+group_summary_total <- data %>%
+  group_by(Temperature) %>%
+  summarise(
+    mean_eggs = mean(`Amount_of_egg`, na.rm = TRUE),
+    sd_eggs = sd(`Amount_of_egg`, na.rm = TRUE),
+    n = n()
+  )
+
+# Legg til SE for hver gruppe
+group_summary_total <- group_summary_total %>%
+  mutate(se_eggs = sd_eggs / sqrt(n))
+
+# Se resultatet
+group_summary_total
+
+```
+
+
+### Significant difference in egg per female per day and temperature
+```{r}
+t_test_result_female<-t.test(Egg_per_female~Temperature,data=df_filtered)
+t_test_result_female
+```
+```{r}
+df_summary_female <- data %>%
+  group_by(Temperature) %>%
+  summarise(
+    mean_eggs = mean(Egg_per_female),
+    sd_eggs = sd(Egg_per_female),
+    n = n()
+  )
+df_summary_female
+```
+```{r}
+# Beregn gruppevis gjennomsnitt, standardavvik og antall
+group_summary_female <- data %>%
+  group_by(Temperature) %>%
+  summarise(
+    mean_eggs = mean(`Egg_per_female`, na.rm = TRUE),
+    sd_eggs = sd(`Egg_per_female`, na.rm = TRUE),
+    n = n()
+  )
+
+# Legg til SE for hver gruppe
+group_summary_female <- group_summary_female %>%
+  mutate(se_eggs = sd_eggs / sqrt(n))
+
+# Se resultatet
+group_summary_female
+
+```
+
+
+
+
+### Significant difference between egg per mL and temperature 
+```{r}
+t_test_result_mL<-t.test(Egg_per_ml~Temperature,data=df_filtered)
+t_test_result_mL
+```
+```{r}
+df_summary_mL <- data %>%
+  group_by(Temperature) %>%
+  summarise(
+    mean_eggs = mean(Egg_per_ml),
+    sd_eggs = sd(Egg_per_ml),
+    n = n()
+  )
+df_summary_mL
+```
+
+```{r}
+# Beregn gruppevis gjennomsnitt, standardavvik og antall
+group_summary <- data %>%
+  group_by(Temperature) %>%
+  summarise(
+    mean_eggs = mean(`Egg_per_ml`, na.rm = TRUE),
+    sd_eggs = sd(`Egg_per_ml`, na.rm = TRUE),
+    n = n()
+  )
+
+# Legg til SE for hver gruppe
+group_summary <- group_summary %>%
+  mutate(se_eggs = sd_eggs / sqrt(n))
+
+# Se resultatet
+group_summary
+
+```
+

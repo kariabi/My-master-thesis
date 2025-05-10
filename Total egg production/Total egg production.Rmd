@@ -1,0 +1,51 @@
+---
+title: "Total egg production"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+```{r}
+library(readxl)
+```
+```{r}
+total<-read_excel("Total_egg_production.xlsx")
+```
+
+```{r}
+library(dplyr)
+```
+```{r}
+library(gcookbook)
+```
+
+
+```{r}
+library(scales)
+library(ggplot2)
+
+max_val <- max(total$`Total egg`, na.rm = TRUE)
+
+p <- ggplot(total, aes(x = as.factor(Round), y = `Total egg`, fill = System)) +
+  geom_col(position = position_dodge(width = 0.9), width = 0.9) +
+  geom_text(aes(label = round(`Total egg`)),
+            position = position_dodge(width = 0.9),
+            vjust = -0.3, size = 3) +
+  scale_fill_manual(values = c("lightblue", "#FF9999"),
+                    name = "Developmental\ntemperature") +
+  scale_y_continuous(
+    labels = label_number(big.mark = " "),  # Vanlige tall med mellomrom
+    breaks = seq(0, max_val * 1.1, by = 10000000),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(x = "Rounde", y = "Totalt amount of egg") +
+  theme_minimal() +
+  theme(legend.title.align = 0.5)
+
+ggsave("high_contrast_graph_final_1.png", plot = p,
+       width = 16, height = 10, dpi = 300, units = "cm", bg = "white")
+
+
+```
+
