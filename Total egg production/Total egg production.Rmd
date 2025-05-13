@@ -39,7 +39,7 @@ p <- ggplot(total, aes(x = as.factor(Round), y = `Total egg`, fill = System)) +
     breaks = seq(0, max_val * 1.1, by = 10000000),
     expand = expansion(mult = c(0, 0.05))
   ) +
-  labs(x = "Rounde", y = "Totalt amount of egg") +
+  labs(x = "Replicate", y = "Totalt amount of egg") +
   theme_minimal() +
   theme(legend.title.align = 0.5)
 
