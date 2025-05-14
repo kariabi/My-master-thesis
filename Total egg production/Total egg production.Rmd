@@ -43,7 +43,7 @@ p <- ggplot(total, aes(x = as.factor(Round), y = `Total egg`, fill = System)) +
   theme_minimal() +
   theme(legend.title.align = 0.5)
 
-ggsave("high_contrast_graph_final_2.png", plot = p,
+ggsave("high_contrast_graph_final_1.png", plot = p,
        width = 16, height = 10, dpi = 300, units = "cm", bg = "white")
 
 
